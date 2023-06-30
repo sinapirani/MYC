@@ -9,6 +9,9 @@
   "categories": [
     "Other"
   ],
+  "permissions": [
+    "fileDecoration"
+  ],
   "activationEvents": [],
   "main": "./dist/extension.js",
   "contributes": {
