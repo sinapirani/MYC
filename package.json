@@ -17,8 +17,8 @@
   "contributes": {
     "commands": [
       {
-        "command": "mycomponent--next-js-server-or-client-component-detector.helloWorld",
-        "title": "Hello World"
+        "command": "mycomponent--next-js-server-or-client-component-detector.Scan",
+        "title": "Mycomponent: Scan"
       }
     ]
   },

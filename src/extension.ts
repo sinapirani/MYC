@@ -1,25 +1,16 @@
 
-
-
-
 import * as path from "path"
 import * as fs from "fs"
 import * as vscode from 'vscode';
+import { stateManager } from "./stateManager";
 
-class TokenCanceller extends vscode.CancellationTokenSource {
-	constructor(token: vscode.CancellationToken) {
-		super()
-		this.token = token
-	}
-}
+
 class MyDecorationProvider implements vscode.FileDecorationProvider {
 
-
+	
 	constructor(
 		private readonly filename?: string,
-		private fileDecorationCache?: fileDecorationCacheItem[],
-		private readonly event?: vscode.TextDocument
-	) { }
+	) {}
 
 	private static badge: vscode.FileDecoration = {
 		badge: 'CS',
@@ -74,16 +65,10 @@ class MyDecorationProvider implements vscode.FileDecorationProvider {
 }
 
 
-type fileDecorationCacheItem = {
-	fsPath: string,
-	version: number,
-	decoration: vscode.Disposable
-}
-type fileDecorationCache = fileDecorationCacheItem[]
 export async function activate(context: vscode.ExtensionContext) {
 
-	let fileDecorationCache: fileDecorationCache = []
-	let totalFileDecorationCache: Partial<fileDecorationCache> = []
+
+	const state = stateManager(context)
 	const workspaceFolder = vscode.workspace.getWorkspaceFolder(vscode.window?.activeTextEditor!?.document?.uri);
 	let isNextProject: boolean = false
 
@@ -103,44 +88,28 @@ export async function activate(context: vscode.ExtensionContext) {
 
 
 	const files = await vscode.workspace.findFiles("")
-	files.forEach(file => {
-		const decorationProvider = new MyDecorationProvider(file.fsPath);
-		totalFileDecorationCache.push({
-			fsPath: file.fsPath,
-			version: 0,
-			decoration: vscode.window.registerFileDecorationProvider(decorationProvider)
-		})
-	})
-
-
+	for(const file of files){
+		const decorationProvider = new MyDecorationProvider(file.fsPath);	
+		await state.write(file.fsPath, vscode.window.registerFileDecorationProvider(decorationProvider))
+	}
 
 	const saveHandler = vscode.workspace.onDidSaveTextDocument(event => {
 
-		const decorationProvider = new MyDecorationProvider(event.uri.fsPath, fileDecorationCache, event);
-
-		const decorationProviderIndex = fileDecorationCache.findIndex(dp => dp.fsPath == event.uri.fsPath)
-		const totalFileDecorationCacheIndex = totalFileDecorationCache.findIndex(dp => dp?.fsPath == event.uri.fsPath)
-		if(totalFileDecorationCacheIndex != -1){
-			totalFileDecorationCache[totalFileDecorationCacheIndex]?.decoration.dispose()
-			totalFileDecorationCache.splice(totalFileDecorationCacheIndex, 1)
-		}
-		if (decorationProviderIndex != -1 && fileDecorationCache[decorationProviderIndex].version < event.version) {
-			fileDecorationCache[decorationProviderIndex].decoration.dispose()
-			fileDecorationCache.splice(decorationProviderIndex, 1)
-			return;
+		const fsPath = event.uri.fsPath
+		const cachedDecorator: vscode.Disposable = state.read(fsPath) as vscode.Disposable
+		if(cachedDecorator){
+			cachedDecorator.dispose()
 		}
 
-		if (decorationProviderIndex == -1) {
-			fileDecorationCache.push({
-				fsPath: event.uri.fsPath,
-				version: event.version,
-				decoration: vscode.window.registerFileDecorationProvider(decorationProvider)
-			})
-		}
-		vscode.window.showInformationMessage("hello mdf")
+		const decorationProvider = new MyDecorationProvider(event.uri.fsPath);
+		state.write(fsPath, vscode.window.registerFileDecorationProvider(decorationProvider))
 	})
-	let commandHandler = vscode.commands.registerCommand('mycomponent--next-js-server-or-client-component-detector.helloWorld', () => {
-		vscode.window.showErrorMessage('Hello World from MYComponent: Next.js server or client component detector!');
+	let commandHandler = vscode.commands.registerCommand('mycomponent--next-js-server-or-client-component-detector.Scan', () => {
+		if(isNextProject)
+			vscode.window.showInformationMessage('Scan Completed!');
+		else{
+			vscode.window.showErrorMessage("This is Not Next.js project!")
+		}
 	});
 
 	context.subscriptions.push(saveHandler, commandHandler)
