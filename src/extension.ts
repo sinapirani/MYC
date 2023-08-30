@@ -87,10 +87,15 @@ export async function activate(context: vscode.ExtensionContext) {
 
 
 
-	const files = await vscode.workspace.findFiles("")
+	const allFiles = await vscode.workspace.findFiles("")  
+	const files = allFiles.filter(file => !file.path.includes("node_modules") && !file.path.includes(".next"))
 	for(const file of files){
-		const decorationProvider = new MyDecorationProvider(file.fsPath);	
-		await state.write(file.fsPath, vscode.window.registerFileDecorationProvider(decorationProvider))
+		console.log("file", file);
+		if(!file.path.includes("node_modules") || !file.path.includes(".next")){
+			const decorationProvider = new MyDecorationProvider(file.fsPath);	
+			await state.write(file.fsPath, vscode.window.registerFileDecorationProvider(decorationProvider))
+		}
+
 	}
 
 	const saveHandler = vscode.workspace.onDidSaveTextDocument(event => {
