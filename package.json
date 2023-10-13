@@ -2,6 +2,7 @@
   "name": "mycomponent--next-js-server-or-client-component-detector",
   "displayName": "MYComponent: Next.js server or client component detector",
   "description": "",
+  "publisher": "SinaPirani",
   "version": "0.0.1",
   "engines": {
     "vscode": "^1.79.0"
@@ -12,7 +13,9 @@
   "permissions": [
     "fileDecoration"
   ],
-  "activationEvents": [],
+  "activationEvents": [
+    "onStartup"
+  ],
   "main": "./dist/extension.js",
   "contributes": {
     "commands": [
@@ -33,11 +36,11 @@
       "explorer/context": [
         {
           "command": "mycomponent--next-js-server-or-client-component-detector.ConvertToCl",
-          "when": "resourceLangId == javascript || resourceLangId == typescript"
+          "when": "resourceLangId == javascript || resourceLangId == typescript || resourceLangId == typescriptreact || resourceLangId ==javascriptreact"
         },
         {
           "command": "mycomponent--next-js-server-or-client-component-detector.ConvertToSR",
-          "when": "resourceLangId == javascript || resourceLangId == typescript"
+          "when": "resourceLangId == javascript || resourceLangId == typescript || resourceLangId == typescriptreact || resourceLangId ==javascriptreact"
         }
       ]
     }
