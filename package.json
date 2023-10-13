@@ -19,8 +19,28 @@
       {
         "command": "mycomponent--next-js-server-or-client-component-detector.Scan",
         "title": "Mycomponent: Scan"
+      },
+      {
+        "command": "mycomponent--next-js-server-or-client-component-detector.ConvertToCl",
+        "title": "Convert to CL"
+      },
+      {
+        "command": "mycomponent--next-js-server-or-client-component-detector.ConvertToSR",
+        "title": "Convert to SR"
       }
-    ]
+    ],
+    "menus": {
+      "explorer/context": [
+        {
+          "command": "mycomponent--next-js-server-or-client-component-detector.ConvertToCl",
+          "when": "resourceLangId == javascript || resourceLangId == typescript"
+        },
+        {
+          "command": "mycomponent--next-js-server-or-client-component-detector.ConvertToSR",
+          "when": "resourceLangId == javascript || resourceLangId == typescript"
+        }
+      ]
+    }
   },
   "scripts": {
     "vscode:prepublish": "npm run package",
