@@ -3,10 +3,11 @@
   "displayName": "MYComponent: Next.js server or client component detector",
   "description": "",
   "publisher": "SinaPirani",
-  "version": "0.0.1",
+  "version": "0.0.3",
   "engines": {
     "vscode": "^1.79.0"
   },
+  "icon": "icon.png",
   "categories": [
     "Other"
   ],
@@ -14,7 +15,10 @@
     "fileDecoration"
   ],
   "activationEvents": [
-    "onStartup"
+    "onLanguage:typescript",
+    "onLanguage:typescriptreact",
+    "onLanguage:javascript",
+    "onLanguage:javascriptreact"
   ],
   "main": "./dist/extension.js",
   "contributes": {
